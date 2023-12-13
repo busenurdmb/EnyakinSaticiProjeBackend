@@ -1,0 +1,460 @@
+Abstract-->Soyut nesneleri yani interfaceleri abstract nesneleri base classlarý bunun içine koyucaz,Referans tutucularý koyucaz
+ne iþe yarýyor?
+absract ile uygulamalar arasýndaki baðýmlýlýklarý minimilize ediyor olucaz
+Concrete-->Somut gerçekiþi yapan claslarý buraya koyucaz
+Public -->bu clasa diðer katmanlrda ulaþabilsin demek
+becauese dataacces ürün ekliycek
+business ürünü kontrol edicek
+bir clasýn default eriþim bildirgeci internal 
+internal demek sadece entities eriþebilir demek
+Çýplak class kalmasýn--->
+ne demek bi class Ýnheritance veya interface implementasyonu almýyorsa anlaki ilerde sýkýntý yaþama imkaný yüksek 
+iþte biz bu varlýklarýmýz iþaretleme gruplama eylemine gideriz
+neddir bu?
+derizki conrete clasöründeki sýnýflar bir veri tabaný tablosuna karþýlýk geliyor
+****************************
+veri eriþim sql cümlecikleri yazdýðýmýz yer ama illa sql olmak zorunda deðiþ mongo dibi excel farklý yedren veri çekiyo olabiliriz.
+dataaccess--önce interface oluþturulur
+concrete tarafý 
+
+             *>x
+-----------* **>y
+|dataacces|  *>z    alternatif yöntemler vardýr x y z gibi bunlar Ado.Net
+-----------         EntityFramwork,Dapper vs eðer alternatifi olan bir ortamý 
+                    kodluyorsonuz clasýn alternatifi yok ama teknoloji anlamýnda alternatif bir þey kullanýyorsanýz klasörlöme  tekniðine gidiyorsunuz
+-----------
+|Business |
+-----------
+busines iþ yapýlan katman
+kural bir iþ sýnýfý baþka sýnýflarý new lemesin
+napýcaz ýnjection
+
+PUBLÝC class ProductManager:IProductService{
+
+IProductDal _productDal
+
+publilc Productmanager(IProductdal productDal)
+{
+_productdal=productDal;
+}
+
+}
+bu ne demek-> productmanger newlendiðinde
+constructer diyorki bana bir tane IProductDal referansý ver
+Ýnmemoryde olabilir entityframworkte olabilir dapperde olabilir alternatif
+-----------------------------
+Repository DesignPattern
+IproductDal ve ICategoryDal  da tanýmladýðýmýz methodlarda sadece isim kýsmýndaki tip sýnýfýn ismini alýyor ve birden fazla sýnýfýmýzda her sýnýf için ayný þeyleir yazýp tipleir deðiþtirmemiz lazým.
+BU yapýyý öðrendik genericler
+generic alt yapý ile bunu kurabiliriz her nesnnemize bunlarý yazmamýza gerek yok onun yerine bir tane interface yapsak generic olsa category veya product yerine generic t olsa ayný þey bu yapýyý kurabilir zbu yapnýýn adý gerneic repositorypattern
+
+List<T> GetAll(Expression<Func<T, bool>> filter = null); -->BU YAPI ÝLE CATEGORY göre getir,ürünün fýyatýna göre getir için ayrý ayrý methodlar yazmammýz gerekmicek 
+filter=null filtre vermeyedebilrsin.
+T Get(Expression<Func<T, bool>> filter);-->tek bir data getirmek için bu genellikle bir sistemde bir þeiyn detayýný bankacýlýk sistmeinde bir kiþinin kredilerini listeliyip basýp onun detaylarýna gitmek için tek bir kredi detayýna 
+yada bankacýlýkta hesaplarýýnýz var liste olarka geliyor virt anesine týklauýp detaylarýna gidiyorsunuz. filtre zorunlu
+-->Filtre vermemiþse tüm datayý istiyor demektir filtre verdiyse filtreleiyp getirecek
+bu methodlar bir kere yazýlmasý yeterli
+aradan zaman geçti diyelim
+enitylayar->concrete->newclass->ýentity implement->dataacceslayer>ýnewclassDal->IEntityRepository implemet
+
+GENERÝC CONSTRAÝNT
+-->GENERÝC KISIT DEMEK
+
+*******************************
+entity framwork--->Orm linq destekli
+orm->veri tabanýndaki tabloyu clasmýþ gibi onunla iliþkilendirip bütün operasyonlarý sqlleri linq ile yaptýðýmýz bir ortam.
+orm veri tabaný nesneleiryle kodlar arasýnda bir iliþki bað kurup veri tabaný iþleirni yapma süreci.
+entityframwork sisteme nasýl dahil edilir?
+baþkalarýnýn yazdýðý ortak kullanýlan yer var NuGet
+C:\Users\BUSE NUR\.nuget\packages\microsoft.entityframeworkcore.sqlserver\6.0.24\ 
+bunu kurduk bu katmanda entityframwork kodu yazabiliriz :)
+ef ile category product ile ilgili kodlarýmýzý yazabiliriz.
+using-->IDispoable pattern implementation of c#
+//c# özel çok güzel bir yapý
+        //siz bir clasý newlediðinizde o bellekten gccalactör belli bir zamanda düzenli olarak gelir ve onu atar.
+      //  using içeriisne yazdýðýnýz nesneler using bitince anýnda gc calactöre geliyor beni bellekten at diyor çünkü context nesnesi pahalý.
+      *********************************
+         public void Add(Product entity)
+    {
+        
+        using (EnYakýnSatýcýContext context=new EnYakýnSatýcýContext())
+        {
+            //veri tabanýyla iliþkilendirdim ne yapayým
+            var adddedEntity=context.Entry(entity);
+            //state durum demek eklenecek bir nesne
+            adddedEntity.State = EntityState.Added;
+            //ekle
+            context.SaveChanges();
+        }
+    }
+      var addedEntity->deðiþken,eklenen varlýk
+      entry : framworke özel -git veri kaynaðýndan benim gönderdiðim productan birt ane nesneyi eþleþtir ama ekleme olduu için eþleþtirmeyecek direk ekliycek.
+
+********************************************
+Business katmanýna bakýyorum
+benim þuan yapým asla deðiþmedi ben burada entitiy framworke baðýmlý olmadým oda ýproductdal üzerinden gidiyor
+bizim yaptýðýmýz harekete entityframwork kalsörünü koyduk.
+web uygulama mobil uygulama masaüstü uyuglam oyun olabilir businestaa deðiþmedi sadece veriye eriþim yöntmei deðiþtirdim.
+
+**********************************
+bu hareket SOLID O Harfi
+Open closed priciple
+yeptýðýn yazýlýma yeni bir özellik ekliyorsan mevcuttaki hiçbir koduna dokunamasýn
+*************************
+repository ile iþ kodlarý birbirlerindne ayrýlabilirler.
+***************************************************************
+repositorypattern oluþturduk bunun içerisinde gerekli olan crud operasyonalarýný bir expression predicate ile vermiþ idik nasýl fayda saðladý biliyoruz
+bunun entityframwork implementyosnunu yaptýk temel crudoperasyonlarýný projelerde %90 yapýlan iþlerdir
+önemli olan crud operasyonlarýný yazmak deðil sürdürülebilirl siistem yapmak çünkü yazýlým yaþayan bir organizma
+ýcategorydal ve ýproductdal da gönderdiðimiz nesne deðiþiyor ve context kýsmý ayný yani ikitane deðiþeceðimizi bildiðimiz yapýmýz var çalýþtýðýmýz entitymcontextimiz 
+base sýnýfa çalýþýp çalýþcaðým context ve entity ver generic yapsam.
+Madem jeneric yapýcam bu projede neden kullanýyýmki
+veritabanýný ilgilendiren nesne yok jeneric yok
+yazýlým geliþtitrme projelerimizde framwork katmaný oluþtururuz
+
+----------------------------------
+--           core              --
+---------------------------------
+
+--------------        ------------
+-- proje1 ---         -- proje2 --    2 tane projemmiz var diyelim
+-------------         ------------ 
+
+2 projedede ayný þeyler yazýlýr ýentityrepository kýsmýnda 
+Core adýnda proje alistýrsak .netcore la alakasý yok
+biz x sek x in coru
+bu nu proje1 de kullansýn proje 2 de kullansýn
+biz core adýnda katman yapsak ve o katmanýn içerisine ortak kodalarý koysak biz onu bütün projelrde kullanabilsek
+bu birçok proje büyük kurumsal organizasyondada böyledir Core katmaný buna alt yapý ekibide deniyor sadece core katmanýyla ilgilernir sistemler için alt yapýlar yazar ve bütün projelerde alt yapý kullanýlýr hereks kafasýna göre kod yazmasýn 
+Core Katmaný -->Evrensel kodalrý yani tüm projelrdekullanýlacak kodalrýnýzý buraya koyabilirsiniz hangi katmnala ilgileneceksen o katmanla ilgili kalsör koyuyorum
+********
+namaspace-->isim uzayý 
+classlarýný klasörlemrimizi belli bir isim uzayý içerisine býrakýyoruz onlarý rahat ulaþabilileillim diye
+core katmanýna dataacces kalsörü açýp ortak ýentityrepository ve enitities klasöründne ýentitiy alýyoum
+**Core katmaný diðer katmanlarý referans almaz
+alýrsa en o katmanlara baðýmlýsýn
+************
+Core->EfEntityRepositoryBase()->EnitityFramwork kullnarak bir tane enitty framwork base oluþtur demek.
+public class EfEntityRepositoryBase<TEntity,TContext>  bir tane entity bir tane context titpi var demek
+Öyle bir yapý kuralýmki veri tabanýna yeni bir yapý eklediðimizde insert delete getal filtreli yapýlar getbyid tüm operasyonlar için bir dah abir þey yazmayalým.
+iþte bu yapýyý tasarlýyca zaten biz bunun base hazýlradýk ef cod yazýcaz bu projeye core projesine eklememiz gerekiyor 
+***********************************
+diyelim productta productname-categoryýd yazdýðým category ýd si geliyor ismi gelmiyor
+-->bana öyle bir nesne lazýmký sadece ýdleri deðil nameleride içermeli
+örneðin entity->product açtýðýmýzda categoryýd var categoryname yok
+bu class bizim tablomuzun similasyonu buraya categorynama yzmýyoruz join gibi operasyonlarý enitiylayer ktamaný üzerinde saða týklýyoruz->new folder->DTOs
+DTOs->Data Transformation Object ->taþýyyacaðým objeler
+IEntity->sen bir veritabaný tablosumusun
+ama ProductDetailDto BUNU VEREMEYÝZ BUNA IDto DÝCEZ KAFASINA GÖRE CONTEXTE EKLEMESÝN DÝYE ÇÜNKÜ O BÝR TANLO DEÐÝL BELÝK BÝRDEN FAZLA TABLONUN JOÝNÝ OLABÝLÝR BÝR ÇOK KOLONU OLABÝLÝR 
+*********************************************
+ 
+ ----         ----        --------    ----------   --------   ---------
+ -DA-         -BS-        -CONSOLE-    -ANGULAR-   - IOS -    -ANDROÝD-
+ ----         ----         -------    ----------    -------    --------
+
+ BUNLARIN BÝÝZÝMLE GÖRÜÞEBÝLMESÝ ÝÇÝN BÝR KATMAN DAHA OLUÞTURUCAZ 
+ WEB APÝ KATMANI
+ WEB APÝ->YAZDIÐIMIZ .NET CODE U IOS FLUTTER ANGULAR ÝÇÝN BÝR ANLAM ÝFADE ETMÝYOR console için ediyor console .net projesi
+ angular reeact vue ios bir android uygulamasý sizin yazdýðýnýz kodu anlamaz
+ bunu anlasýn diye yazýlým dünyasýnda bir standart var web api olarak yapýyoruz .net projelerinde bu Restful(JSON) dediðimiz aslýnda bir formatla çalýþan BU FORMAT GENELLÝKLE json OLAN HTTP ÝSTEKLERÝ ÜZERÝNDEN YAPILAN bir süreciin ta kendisi araya web api katmaný koyuyor olucaz 
+ web apý oluþturmadan önce farklý clientlerle çalýþýcaðýz ya console angular bunlar uygulamýn clienti müþterisi
+bunlarla çalýþacaðýmýz zaman oonlarýn bizim yazdýðýmýz restful servise istek yapmasýný bekliyoruz istek yaptýðý zaman REQUEST(ÝSTEK) RESPONSE(CEVAP)
+REQUEST VE RESPONSE SÜRECÝNÝ DAHA ÝYÝ YÖNETBÝLMEK ÝÇÝN profesyonel bir alt yapý yükliycez sistmeme yazýcaz yani
+iþ katmanýnda yaptýðýmýz iþlemlerin sunucunun ne olduðuile ilgilenicek 
+yani bir istekte bulunan kiþiye sen eklemek istedin ve senin yaptýðýn iþlemin sonucunda iþlem baþarýsýz oldu ben ekleyemedim þundan dolayý gibi veya sen eklemek istedin ben bunu ekledim iþlem baþarýlý haberin olsun þeklinde verdiðimiz yapýlarý burda oluþturucaz haberin olsun daha profesyonel hale getiricez ve bunu bir kere yazýcaz bir daha yazmýcaz arkadaþlar 
+Utilies->Araçlar
+Results->Sonuçlar
+interface üzerinden ilerliycez interfaceleri genllikle operasyonlar için kullandýk ama
+ilk interfaceleirmizden biri özellik tutan claslarýn yönetimi konusundayydý.
+interfaceleri gerçek hayatta projede kullanabilek için ordaki referans yönetimini yakalayabilmek gerekiyor.
+Iresult
+/// temel voidler için baþlangýç
+/// voidleri result yapýsýyla süslüyor olucaz
+/// içerisinde iþlem sonucu ve kullanýcýyý bilgilendirmke için mesaj 
+/// yaptýðýmýz þey çok basit apileirmizi ve uygulamayý kullanýcak kiiþy doðru yönlerdirmek
+Get->okunaabilir 
+property ler iki noktada kullanýlabiliyor
+1 get okumak
+2set yazmak için
+nasýl set edicez constructerda bu hareketi yapabilirsiniz
+ //private bool v1;
+    //private string v2;
+    ////sen Resulta Constructer vasýtasýyla birtane true veya false (bool),birtan string bir þey göndermek istiyorsun þeklinde söylüyor bize
+    //public Result(bool v1, string v2)
+    //{
+    //    this.v1 = v1;
+    //    this.v2 = v2;
+    //}
+
+
+     ///bir çok iþlemde mesaj vermek istemiyor iþlem sonucu döndürmek istiyor olabilirsiniz.
+    ///böyle bir yapýyý nasýl koyucaz
+    ////iki tane constructur biri succesli diðerinde ikiside var 
+    ///prensib çðnedim ayný koddu yazdým
+    ///mesaj koymak istemiyorsam ilk contructor çalýþmasýna gerek yok 
+    ///ama ilk constructerý çalýþtýran birisi ikini constructerýda çalýþtýrmak istiyordur ilk ctr ikincisi kapsýyor ilk koddaki succes set etme iþini ikinci arkadaþa veriyorum mecbur ama ilkiçalýþýnca ikinciside çalýþsýn istiyorum
+    ///c# ta This DEMEK clasýn kendisi demek resultý kastediyor 
+    ///this(success) resultýn tek parametreli olan ctor una succes yolla dersnikiside çalýþýr.
+
+
+    business->Constans->proje sabitleirni bunun içine alýcaz enyakýnsatýcýyaözel bu tip mesajlar enum lar
+    //magic strings ->strinhleri ayrý ayrý yazmak
+                return new ErrorResult(Messages.ProductNameInvalid);
+               // return new ErrorResult("Ürün ismi en az 2 karakter olmalýdýr");
+               *************************
+ API->RestFULL mimariyi destekler
+ Restfull mimariyle çalýþma ortamý sunar
+ restful mimari bizim geliþtirdiðimiz  .net i tanýmayan bir java kotin ýos uygulamamsýný bizim sistemimizle iletiþim kurmasýný saðlayan bir ortam
+ restful mimarinin karþýlýðý spring mvc tabanýýnda birþey olabilri python go tarfaýnda olabilir hepsinin aslýnda restful ortamý söz konusu .netinki asp.net web api
+ asp.net 
+ -----------------
+ Controller->Gelen bütün isteklri controller karþýlýyor
+ RESTFULL-->HTTP-->
+ HTTP PROTOKOLÜ-->BÝR KAYNAÐA ULAÞMAKK ÝÇÝN ÝZLEDDÝÐÝ YOL 
+ istek=>restfull yapýlar karþýmýza HTTP PROTOKOLÜ ÜZERÝNDEN GELÝYOR 
+ mobil uygulamada cep telfonundan istek yapýyorsunuz kategoriye týklýyorsunuz bu isteði yaptýðýnýz zaman sistemle iletiþim kurabileceðiniz tek yöntem tek network internet dolayýsýyla biz restful miamarileri internet protokolünü yani httpyi kullanarak gerçekleþtiriyoruz
+ ama mesela iki cihazý birbiriyle görüþtüreceksinizdir kabloyla ordada TCP gibi protokoller karþýmýza çýkýyor. oanki ihtiyaca bilgisyarlarýn birbirleriyle nasýl görüþeceði ile deðiþiyor.
+
+ cONTROLDE SÝZ SÝE YAPILABÝLECEK ÝSTEKLERÝ KODLUYORSUNUZ
+ Controller bizim sistemimizi kullanýcak clientler (tarayýcý mobil uygulama desktop olabilir baþka bir web uygulamasý anguler react vue olabilir) bize hangi operasyonlar için ve nasýl istekte bulunabilirleri siz controlda yazýyorsunuz.
+ ATTRIBUTE->bir clas ile ilgili bilgi verme onu imzalama yöntemidir
+ diyoruzki bu class bir controldür kendini ona göre yapýlandýr diyoruz.
+ Route->bu isteði yapparken bu insanlar bize nasýl ulaþsýn
+ Domain->htttps://localhost:44314/ 
+ kodlama.io/api/products 
+ web uygulamasý ayyýnladýðýnýz zaman onun bir apisi ve portu vardýr 44314 burda kodlama.io gibi düþünebilrisiniz.
+ Json-->süslü parantez baþla süslü parantez bitir bir obje
+ eðer tek bir obje olursa birt ane süslü pazantez aç kapa içinde datayý görürsün ,ama array formtý görürsen onu köþeliparantez içine alýp hepsini virgülle ayýr.
+ ----------------------------
+ apý içinde somut sýnýf yok ayný þekilde business ve daldada yok
+ *****************************
+       ///ctorda bana bir tane manager ver 
+            /// public ProductsController>(IProductService productService)< bu manager ver demek çünkü ýproductservice managerýn refernsýný tutabiliyor önünde çizgi olmayan productservice
+            /// ona bir field yapayým gelenide ona atayým 
+            ///  IProductService _productService;->field</bu>
+            ///    public ProductsController(IProductService productService)
+            ///                               /
+            ///                              /
+           /// _productService = productService;
+           /// method içinde product servise eriþemezsiniz field yapýp öyle atama yapýyoruz
+           ************
+/// <summary>
+        /// <Ioc Container--Inversion of Control
+        /// bellekte kutu liste gibi
+        /// içine New productmanager(),new efProductDal() gibi referanslar koyuyumiçine kim ihtiyaç duyuyorsa onu ona verelim
+        /// yani diyoruzki products controller biliyoruz product service ihtiyacýn var ben senin içn bellekte bir tane newledim sana onu veriyorum diyorsun 
+        yani configürasyon
+        /// </summary>
+        **********************
+
+        //singleton bana arka planda bir referans oluþtur
+//kýsacasý ýoc leer sizin yerinize newliyor
+//biri senden ýproductservice isterse ona arka tarafta productmanager oluþtur diyorsuun.
+ 
+
+                  eðer sen bir baðýmlýlýk görürsen bu tipte karþýlýðý budur.
+                                         *>---------->*
+                                        /             \
+builder.Services.AddSingleton<IProductService,ProductManager>();
+singleton tüm bellekte bir tane  productmanager oluþturuyor.
+isterse 1 milyon client gelsin hepsine ayný instanceý veriyor
+singletoný içerisinde data tutmuyorsak kullanýcaz 
+e ticeret sitesinde bir sepet tutuyorsanýz sepetide mangerda tutuyorsanýz bu sefer herkesin sepeti birbirine girer mangerda tutuyorsanýz datada tutyorsanýz ayrý
+DATLI AddScoped veya AddTransient
+*******************
+//AOP
+//Autofac,Ninject,CastlenWindsor,StructurMap,LightInject,DryInject
+//bunlar .net projelerinde -->IoC Container yapýsý yokken daha bu adamlar buþekilde çalýþmka isteyen adamlar için bize alt yapý sunuyordu
+.Net kendi yapýsýný niye kullanmýyorsun?
+projemiz þuanký gibi olsaydý sade ýnjection yapýyor olsaydýk haklýyýdn
+ama biz AOP yapýcaz
+AOP->siz bütün metotlarýnýzý loglamak istiyorsunuz
+ILoggerService.log() deriz onun yerine biz methodun üstüne [LogAspect] yazýcaz bu þu anlama gelicek git bu methodu logla 
+[LogAspect] ->AOP bir methodun önünde bir methodun sonunda bir method hata verdiðinde sen nasýl dersen o an o konfigürasyonda çalýþan kod parçacýklarýný biz AOP mimarisiyle yazýyoruz yani business içerisinde business yazýyoruz 
+yani web apý method içerisinde yok loglama yönetimi yok hata yönetimi yok transaction yönetimi yok performans yönetimi yok cash yönetimi bunlarýn hepsini validasyon yönetimi,bunlarýn hepsini method içine koyarsak çorba onun yerine aop alt yapýsý kullanýyoruz spring uygulamalarýnda default olan bir teknik 
+[Validate]-->validate et doðrula 
+[Cache]->keþle
+[RemoveCache] ürün eklenirse keþten uçur
+[Transaction]-->hata olursa geri al
+[performance]-->performans olarakk izlediðim bir operasyondur methodun çalýþmasý  5 saniyeyi geçerse beni uyar 
+->CLÝENTIMIZ SERVER BÝZE HANGÝ SEVÝYEDE YANIT VERDÝÐÝNÝ SÖYLÜYOR.
+servere istekte bulunduðunuzda gelen http statu kodu burda yorumlayýp ona göre ekranda çalýþma gerçekleþiyor yetkisi olmasaydý 400 lü bir yanýt
+dolayýsýyla ladýðý yanýta göre bu arkadaþýmýz ekraný yapýlandýrýcak 
+yanýt 400 lü   unauthorize sa statucodeysa ona göre dicek sisteme login olmasý gerekiyor
+var result=_productservice.getall()-->bu result bizze ne veriyo ýdataresult
+eðer result succes durumu true ise
+if(result.success)
+{
+Ok-->hatýrla 200 Ok-->status
+
+return Ok(data);
+eðer baþarýsýzsa 
+Bad Request->400 BadRequest-->yani bu ne anlama geliyor bunu kullanan arkadaþ angular react,flutterda çalýþýrken acception yapar bu bir acception hata olduðu anlmaýna geliyor onu kullanmasa bile data sonucundan bunu daha doðru okur
+return badrequest(result);
+}
+public list<product> get(){
+
+}
+public IactionResult get(){
+if(result.success)
+{
+Ok-->hatýrla 200-->status
+return Ok(data);
+eðer baþarýsýzsa 
+return badrequest(result.messages);
+}
+
+400 bad request neden önemli ?
+data nullmý yani datamý yok yoksa sistemde problem mi var 
+415 unsupported media type-> producta karþýlýk gelen birþey vermedin
+404 not found->böyle bir kaynak yok
+IActionResult->
+
+--------------------------------
+.Net içinde kendi IoC alt yapýsý olsada biz bu alt yapýyý 
+daha ileri seviye interception dediðimiz AOP tekniklerini kullanabilmek için bir ýoc controllerla ,baþka bir ýoc controlla destekliceez demiþtik autofac,ninject,vb.
+Autofac->instance üretiimnii bizim için saðlayan yapýya sahip yapýyor
+ýoc yapýlandýrmasýný hangi interface'in karþýlýðý nedir? þeklinde yapýlandýrmayý apý kýsmýnda deðil birazda backende yapmanýn avantajlarý var nedir?
+startupta yaparsak ->yarýn obur gün projeye bir tane daha api eklersek veya bambaþka servis mimarisi eklemek isteersek bizim bütün configurasyonumuz api de kalýyor congýgurasyonu doðru yapmka için aslýnda yerimiz burasý olmamalý bunu dah ageriye taþýyabiliyoruz .net core içeriisnd ebu startup ýýn içindeki 
+þu kýsmý->
+builder.Services.AddSingleton<IProductService,ProductManager>();
+builder.Services.AddSingleton<IProductDal, EfProductDal>();
+daha geriye taþýyabiliyoruz
+AutoFac KULLANICAZ.
+AOP MÝMARÝAÝ-> METHOSLARIN BAÞINDA SONUNDA HATA VERDÝÐÝNDE ÇALIÞAN ORTAK KODLARVARYA O YAPI AOP,BU Yapý dünyada aþýrý derecede kurumsal organizasyonlarda yoðun kurumsal organizasyonlarda kullnaýlan yapýdýr.
+*********
+businelayer->dependencyreselvorse(baðýmlýlýk çözümleyiciler)
+baðýmlýlýk->bizim gevþek baðýmlý olarak oluþturduðumuz katý baðýmlý oluþturmadýðýmýz gevþek baðlý oluþturmadýðýmýz loosely couples applicatin denilen yazýlým literetülünde bir yapý 
+
+ public class ProductManager:IProductService
+                  /
+    {            /
+        IProductDal _productDal;
+
+        public ProductManager(IProductDal productDal)
+        {
+            _productDal = productDal;
+        }
+
+ProductManager kime baðýmlý IProductDal a hangi ýproduct dala baðlý olduðu belli deðil
+interface üzerinden olduðu için her þeyi verebiliyorum çünkü interface referans tutucu 
+yani syntax olarak interfaceler imza içerir newlenemez gerçek haytta size bir þey kazandýrmaz kullanamasssýnýz ama onun bir referans tutucu olduðunu anlar ve o þekilde kullanýrsan iste senin için soyutlama kolay bir hal almýþ oluyor
+ýproductdal karþýlýðý nedir ýproductservice karþýlýðý nedir bunlarý autofac kullnarak yapýlandýrýyor olucaz yani bir teknoloji kullanýcaz
+APÝYE ÞUNU SÖYLEMELÝYÝZ ýoc yapýlandýrman var onu kullanma ben birazdan yapýyorum dememiz gerekiyor programcsde
+
+business code ile validation code
+genellikle programcýlar karýþtýrýr.
+Validation(doðrulama)->ekleme çalýþtýðýmýz varlýk obje varyaveya nesne
+bu nesnenin iþ kurallarýna dahil etmek için bu nesnenin yapýsal olarak uygun olarak oluadýðýný kontrol etmeye doðrulama deniyor.
+ör:sisteme kayýt olurken min þukadar karakter olmalý þifre þüna uymalý vs
+bu gibi kurallar verinin yapýsal uyumuyla ilgili her þeye doðrulama denir
+iþ kuralý ise bizim iþ gereksinimlerimize iþ ihtiyaçlarýmýza uygunluktur arkadaþlar
+ehliyete alýcaksanýz bir kiþþiye ehliyet verip vermeme kontrolünü yaptýðýnýz yer motor 70 saðlýk 70 gibi
+kredi verirken kiþinin o krediye uygun olup olmadýðýný kontrolu gidip finansal puanýna bakmak iþ kodu.
+eklenmesinin istediðimiz nesnenin yapýsýyla ilgili þeyler validateýn 
+
+if (product.UnitPrice <= 0)
+            {
+                return new ErrorResult(Messages.UnitPriceInvalid)
+            }
+            //busines codes ->eðer öyleyse böyleyse
+            if (product.Name.Length < 2)
+            {
+                //magic strings ->stringleri ayrý ayrý yazmak
+                return new ErrorResult(Messages.ProductNameInvalid);
+               // return new ErrorResult("Ürün ismi en az 2 karakter olmalýdýr");
+            }
+            ikiside doðrulama dediðimiz girilen verinin yapýsýyla ilgili doðrulamadýr. merkezi noktada kurallarýmýz verbilriz fluentvalidation ile ypýcaz.
+            *-*-*-*-*-*-*
+ dataanitions->kötü kodu göstermek
+ [Required]
+ 
+ Public string NationalIdentity {get;set;}
+ Tc ZORUNLU DEMEK
+ sisteme yabancýlarýda dahil ediyorsunuz TC o an zorunnlu deðil
+ Solid in S harfi single responsibility aykýrý
+ onun yerine FluentValidation kullanýcaz 
+            *-*-*-*-*-*
+ ValidationRules->Doðrulama kurallarý
+ 1->Produc için doðrulama yapýcaðým çalýþacaðým tipte parametreden gelen productýr diyorunuz
+           var CONTEXT=new  ValidationContext<Product>(product);
+2->Doðrulucam nere bakarak doðrulucam productvalidator ý kullanarak yazdýðým kurallarý
+            ProductValidator productValidator = new ProductValidator();
+3->ilgili contexti o kurallarý kullanarak doðrula demek
+            var result = productValidator.Validate(CONTEXT);
+sonuç geçerli deðilse hata fýrlat
+            if(!result.IsValid)
+            {
+                throw new ValidationException(result.Errors);
+         
+         }
+*****************************************
+Katmanlý yapýlarýmýz da busine Uý diye düþünebilrilisiniz
+yazýlým geliþtirmede bazý bileþlenler
+Cross Cutting Concerns->uygulamayý dikine kesen ilgi alanlarý
+ör:loglama farklý katmanlarda bunu yapabiliriz aryüz logu iþ logu gibi düþünebilirsiniz 
+örneðin cache,doðrulama ayný þekilde
+yani biz bütün katmanlarda farklý katmlarda bunlarýn farklý verisyonlarýný yapabiliyrouz örneðin doðrulamanýn arayüz verisyonuda var orayada entegre olabiliyor
+bunlara 
+Cross Cutting Concerns diyoruz
+Log
+Cache
+Transaction
+Authorization
+------------------------------
+AOP
+ÖRNEÐÝN siz methoslarýnýzý loglamak istiyorsunuz
+ne zaman loglanýr
+baþýnda,sonunda veya hata verdiðinde
+iþte sen uygulamnaýn baþýnda sonunda hata verdiðinde çalýþmasýný istediðin kodlarýn varsa onlarý AOP yöntemiyle güzel güzel design edebilrisin
+uygulamalarda 50 bin yerde try catch kodlar yazmak zorunda kalmassýn
+her yerde log log yamak zorunda kalmassýnýz bu yönteme Interceptors deniyor
+Interceptýor kelime anlmaý araya girmek demek
+onun içinde bir yapý kurucaz
+BaseAttrýbüte-->bu log doðrulama cache gibi þeyleri biz methodlarýn üzerine attrýbüte olarak koyuyoruz.
+attrýbüte ler methodun üstünde kullanýlýyorya siz bu methodu kullanýcanýz zamna
+neden attrýbüte kullanýyorsunuz?
+sen bir kodu Add çaðýracaðýn zaman diyorsunki git üstüne bak bakalým belli kurala uyan attrýbutlar varmý varsa onlara gidip çalýþtýrýyorsun olay bu 
+MethodInterception.cs->
+Add ÇALIÞTIRMAYA çalýþýrken sen diyorsunki Add e
+Invocation çalýþmak istediðin methodun oluyor
+sen onu nerede çalýþtýrmak istersen OnBefore(invocation) dersem methodun baþýnda çaýlýþýr
+bütün methodlarýn çatýsý bura
+bütün methoslar bu kurallardan geçicek direkt çalýþmýyacak 
+-*******************************************************************-
+ //Reflection_>çalýþma anýnda bir þeyleri çalýþtýrabilmenizi saðlýyor bir þeyleri newliyoruz çalýþma anýnda newlememizi istiyor.
+ Yansýma (Reflection), üst verinin (metadata) çalýþma zamanýnda (runtime) incelenmesini saðlayan mekanizmadýr
+ bir programýn çalýþma zamanýnda kendi kendisi hakkýnda bilgi toplamasýný ve bu bilgiyi kullanarak dinamik olarak nesneler oluþturmasýný, özelliklerini ve davranýþlarýný deðiþtirmesini saðlar
+ var validator = (IValidator)Activator.CreateInstance(_validatorType);
+ Activator.CreateInstance ->bu bir reflection o productvalidatorun bir instancený oluþtur.
+ ------------
+ niye autofac kullanýyoruz?
+ .net mimarisindede var evet ama autofac bize ayný zamanda intercepter görevi görüyor.
+ //çalýþan uygulama içersinde
+ var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+ //Implemente edilmiþ interfaceleri bul 
+            builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces()
+                .EnableInterfaceInterceptors(new ProxyGenerationOptions()
+                {
+ //onlar için aspectýnterceptor selectorýçaðýr
+                    Selector = new AspectInterceptorSelector()
+                }).SingleInstance();
+
+kýsacasý autofac ne yapýyor biliyormusunuz
+sizin bütün sýnýflarýnýz içn git bak bu adamýn aspecti varmý
+****************
+loglama->yapýlan çalýþmalarýn kaydýný tutmak
+intercepter->araya girmek 
+methodun baþýnda sonunda hata verdiðinde çalýþmak gibi çalýþalar
+virtual method->senin ezmeni beklyen methodlar
+biz aspect yazdýðýmýz zaman nerde çalýþsýn istiyorsak gidip onun iligili methodlarýný eziyoruz
+Aapect demek methodýntercepiton ý aslnda temel alan hangisi çalýþsýn istiyorsan onu temel alan operasyon
+
+CACHE nEDÝR?
+ÖR Product Manager de ürünleri getall methoduyl alisteliyoruz ben [CacheAspect]  yazdýðýmda bunun belli bir süre cacheden gelmesini istiyorum.
+herhangi bir kullanýcý bunu çaðýrdýysa  bizim binlerce kullanýzýmýz olabilir.
+ve çaðýrdýðý data deðiþmediyse bir daha  bir daha veritabanýna gitmesine gerek yok 
+
+birkaç yöntem le yapabilirzbiz .net içinde olan inmemorycachekullanýcaz 
+2.durum
+ürün eklenmesiveya  güüncellenmesi silinmesi durumunda cache uçurulmasýný istiyorum

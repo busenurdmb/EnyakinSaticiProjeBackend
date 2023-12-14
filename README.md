@@ -27,4 +27,4 @@ Bu projede N-Tier Mimaride Restful API yapısı oluşturuldu.Bu proje okul proje
 - SOLID - ✅
 - CLEAN CODE -✅
   #Ekran Resmi
-   
+   ![Api Resmi](https://github.com/busenurdmb/EnyakinSaticiProjeBackend/blob/master/ApiConsume/EnYak%C4%B1nSat%C4%B1c%C4%B1WebAp%C4%B0Consume/images/Ekran.png)

@@ -16,7 +16,7 @@ namespace En_YakınSatıcı.DataAccesLayer.Concrete.EntityFramework
         //Hangi veritabanı
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("server=DESKTOP-493DFJA\\SQLEXPRESS;database=EnYakinSaticiDB;integrated security=true");
+            optionsBuilder.UseSqlServer("server=DESKTOP-493DFJA\\SQLEXPRESS;database=EnYakinSaticiDB2;integrated security=true");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -27,8 +27,7 @@ namespace En_YakınSatıcı.DataAccesLayer.Concrete.EntityFramework
         //veri tabanında Hnagi tabloya ne karşılık geliyor
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
-        
-        public DbSet<OperationClaim> OperationClaims { get; set; }
+         public DbSet<OperationClaim> OperationClaims { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<UserOperationClaim> UserOperationClaims { get; set; }
     }

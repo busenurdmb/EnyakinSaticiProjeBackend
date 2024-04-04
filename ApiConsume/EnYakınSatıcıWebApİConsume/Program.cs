@@ -18,13 +18,17 @@ builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>( builder => builder.RegisterModule(new AutofacBusinessModule()));
 
 builder.Services.AddControllers();
-builder.Services.AddCors(cors =>
-{
-    cors.AddPolicy("EnYakýnSatýcýCors", opt =>
-    {
-        opt.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-    });
-});
+builder.Services.AddCors(
+    
+//    cors =>
+//{
+//    //cors.AddPolicy("EnYakýnSatýcýCors", opt =>
+//    //{
+//    //    opt.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+//    //});
+    
+//}
+);
 builder.Services.AddDbContext<EnYakýnSatýcýContext>();
 // Add services to the container.
 
@@ -79,9 +83,13 @@ builder.Services.AddEndpointsApiExplorer();
             app.UseSwaggerUI();
         }
 
+//app.ConfigureCustomExceptionMiddleware();
+//bu middleware ile tüm sistemi try-catch içeriisne aldýk 
+  app.UseCors(builder=>builder.AllowAnyOrigin().AllowAnyHeader());
+
         app.UseHttpsRedirection();
 
-        app.UseCors("EnYakýnSatýcýCors");
+      
 
         app.UseRouting();
 

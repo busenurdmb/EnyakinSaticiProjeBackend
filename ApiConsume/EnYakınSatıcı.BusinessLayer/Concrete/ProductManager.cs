@@ -1,5 +1,6 @@
 ﻿using En_YakınSatıcı.DataAccesLayer.Abstract;
 using EnYakınSatıcı.BusinessLayer.Abstract;
+using EnYakınSatıcı.BusinessLayer.BusinessAspects.Autofac;
 using EnYakınSatıcı.BusinessLayer.Constants;
 using EnYakınSatıcı.BusinessLayer.ValidationRules.FluentValidation;
 using EnYakınSatıcı.Core.Aspect.Autofac.Performance;
@@ -38,8 +39,8 @@ namespace EnYakınSatıcı.BusinessLayer.Concrete
         }
 
         //add methodunu ProducVALİADATORU KULLANARAK DOĞRULA DİYOR
-
-         [ValidationAspect(typeof(ProductValidator))]
+        [SecuredOperation("admin,product.add")]
+        [ValidationAspect(typeof(ProductValidator))]
 
         public IResult Add(Product product)
         {
@@ -56,10 +57,11 @@ namespace EnYakınSatıcı.BusinessLayer.Concrete
 
         }
 
-        [CacheAspect] //key,value
+       /* [CacheAspect] *///key,value
+
         public IDataResult<List<Product>> GetAll()
         {
-            if (DateTime.Now.Hour == 19)
+            if (DateTime.Now.Hour == 36)
             {
                 return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
             }
@@ -75,8 +77,9 @@ namespace EnYakınSatıcı.BusinessLayer.Concrete
         {
             return new SuccessDataResult<List<Product>>(_productDal.GetAll(p=>p.UnitPrice>=min && p.UnitPrice<=max));
         }
-        [CacheAspect]
+        //[CacheAspect]
         [PerformanceAspect(1)]
+        
         public IDataResult<Product> GetById(int productId)
         {
             return new SuccessDataResult<Product>(_productDal.Get(p=>p.ProductId == productId));
@@ -95,6 +98,13 @@ namespace EnYakınSatıcı.BusinessLayer.Concrete
         {
             
             _productDal.Update(product);
+            return new SuccessResult();
+        }
+  
+        public IResult Delete(Product product)
+        {
+
+            _productDal.Delete(product);
             return new SuccessResult();
         }
         private IResult CheckIfProductCountCategoryCorrect(int CategoryID)
@@ -140,5 +150,10 @@ namespace EnYakınSatıcı.BusinessLayer.Concrete
             _productDal.Add(product);
             return new SuccessResult(Messages.ProductUptaded);
         }
+
+        //public IDataResult<int> GetCategoryIdByProductId(int productId)
+        //{
+        //    return new SuccessDataResult<int>(_productDal.Get(x=>x.ProductId==productId).CategoryID);
+        //}
     }
 }

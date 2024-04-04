@@ -17,8 +17,11 @@ namespace EnYakınSatıcı.BusinessLayer.Abstract
         IDataResult<List<Product>> GetAllUnitPrice(decimal min, decimal max);
         IDataResult<List<ProductDetailDto>> GetProductDetails();
         IDataResult<Product> GetById(int productId);
+        //IDataResult<int> GetCategoryIdByProductId(int productId);
+       
         //void Add(Product product);
         IResult Add(Product product);
+        IResult Delete(Product product);
         IResult Update(Product product);
         IResult AddTransactionanTest(Product product);
     }

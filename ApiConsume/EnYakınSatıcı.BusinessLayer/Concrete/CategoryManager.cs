@@ -15,14 +15,16 @@ namespace EnYakınSatıcı.BusinessLayer.Concrete;
 public class CategoryManager : ICategoryService
 {
     ICategoryDal _categoyDal;
-
-    public CategoryManager(ICategoryDal categoyDal)
+    IProductDal _productDal;
+    public CategoryManager(ICategoryDal categoyDal, IProductDal productDal = null)
     {
         _categoyDal = categoyDal;
+        _productDal = productDal;
+
         //bne categorymanager olarak veri erişim katmanına bağımlıyım ama biraz zayıf bağımlılığım var çünkü inetface referans üzerinden bağımmlığım o yüzden sen dataacces katmanında istediğin kadar at koşturabilirsin yeterki kurallarıma uy
     }
 
-    [SecuredOperation("admin")]
+    //[SecuredOperation("admin")]
     public IResult Add(Category category)
     {
     
@@ -46,5 +48,11 @@ public class CategoryManager : ICategoryService
     public IDataResult<Category> GetById(int categoryid)
     {
         return new SuccessDataResult<Category>(_categoyDal.Get(c=>c.CategoryID == categoryid));
+    }
+
+    public IDataResult<Category> GetCategoryByProductId(int id)
+    {
+       var category=_productDal.Get(x=>x.ProductId == id).CategoryID;
+        return new SuccessDataResult<Category>(_categoyDal.Get(c=>c.CategoryID==category));
     }
 }

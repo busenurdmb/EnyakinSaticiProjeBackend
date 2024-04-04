@@ -67,10 +67,21 @@ namespace EnYakınSatıcıWebApİConsume.Controllers
             return BadRequest(result);
         }
 
-            [HttpGet("getbyid")]
+            [HttpGet("getbyid/{id}")]
         public IActionResult GetById(int id)
         {
             var result = _productService.GetById(id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+        [HttpGet("getbycategory/{categoryID}")]
+        public IActionResult GetBycategory(int categoryID)
+        {
+            var result = _productService.GetAllByCategoryId(categoryID);
             if (result.Success)
             {
                 return Ok(result);
@@ -83,6 +94,26 @@ namespace EnYakınSatıcıWebApİConsume.Controllers
         public IActionResult Add(Product product)
         {
             var result = _productService.Add(product);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+        [HttpPost("update")]
+        public IActionResult update(Product product)
+        {
+            var result = _productService.Update(product);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+        [HttpPost("delete")]
+        public IActionResult delete(Product product)
+        {
+            var result = _productService.Delete(product);
             if (result.Success)
             {
                 return Ok(result);
